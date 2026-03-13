@@ -1,0 +1,34 @@
+# ============================================================
+# LiveKit Inbound Voice Agent — Python Dependencies
+# ============================================================
+# Install all dependencies with:
+#   pip install -r requirements.txt
+# ============================================================
+
+# --- LiveKit Agents framework (core) ---
+livekit-agents[deepgram,google,cartesia,silero,turn-detector]>=1.4.4
+
+# --- LiveKit plugins (STT / LLM / TTS / VAD) ---
+livekit-plugins-deepgram>=0.8.0      # Deepgram STT
+livekit-plugins-google>=1.4.0        # Google Gemini LLM
+livekit-plugins-cartesia>=1.4.4      # Cartesia Sonic 3 TTS
+livekit-plugins-silero>=0.8.0        # Silero VAD
+
+# --- Airtable API client ---
+pyairtable>=2.3.3
+
+# --- LiveKit Server API (for SIP call transfer) ---
+livekit-api>=1.0.0
+
+# --- Twilio helper library (for webhook validation) ---
+twilio>=9.0.0
+
+# --- SSL certificate bundle (required on macOS) ---
+certifi>=2024.0
+
+
+# --- HTTP client (async) ---
+aiohttp>=3.9.0
+
+# --- Logging and utilities ---
+python-dateutil>=2.9.0

@@ -1,0 +1,54 @@
+# ============================================================
+# Git Ignore Rules — LiveKit Voice Agent
+# ============================================================
+
+# --- CRITICAL: Never commit real secrets ---
+.env
+
+# --- Python virtual environments ---
+venv/
+.venv/
+env/
+ENV/
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# --- Python build artifacts ---
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# --- Jupyter / IPython ---
+.ipynb_checkpoints/
+
+# --- macOS system files ---
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# --- Editor files ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# --- Logs ---
+*.log
+logs/
+
+# --- Silero VAD model cache ---
+# The model is downloaded automatically on first run
+*.onnx
+
+# --- LiveKit agent worker state ---
+agent-state/
+
+# --- Test artifacts ---
+.pytest_cache/
+.coverage
+htmlcov/

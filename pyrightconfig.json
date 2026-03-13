@@ -1,0 +1,7 @@
+{
+  "venvPath": ".",
+  "venv": "venv",
+  "pythonPath": "venv/bin/python",
+  "pythonPlatform": "Darwin",
+  "typeCheckingMode": "basic"
+}
