@@ -19,6 +19,7 @@
 import asyncio
 import logging
 import os
+import re
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -90,7 +91,7 @@ LIVEKIT_API_SECRET = os.environ["LIVEKIT_API_SECRET"]
 DEEPGRAM_API_KEY   = os.environ["DEEPGRAM_API_KEY"]
 STT_MODEL          = os.getenv("STT_MODEL", "nova-2")
 GOOGLE_API_KEY     = os.environ["GOOGLE_API_KEY"]
-GOOGLE_MODEL       = os.getenv("GOOGLE_MODEL", "gemini-2.0-flash")
+GOOGLE_MODEL       = os.getenv("GOOGLE_MODEL", "gemini-2.5-flash")
 CARTESIA_API_KEY    = os.environ["CARTESIA_API_KEY"]
 CARTESIA_VOICE_ID   = os.getenv("CARTESIA_VOICE_ID", "f786b574-daa5-4673-aa0c-cbe3e8534c02")
 
@@ -115,71 +116,44 @@ MAX_CALL_DURATION_SECONDS = int(os.getenv("MAX_CALL_DURATION_SECONDS", "600"))
 
 # The agent's personality / instructions fed as the system prompt to the LLM.
 AGENT_SYSTEM_PROMPT = os.getenv("AGENT_SYSTEM_PROMPT") or """\
-You are Milley — a warm, friendly, and professional AI customer-support \
-representative for MarsMan, an AI solutions company that helps businesses \
-and individuals harness the power of artificial intelligence.
+You are Sarah — a warm, friendly, and professional AI receptionist for "The Wellness Clinic". 
+Your goal is to help patients with information and manage their appointments.
 
 ═══ IDENTITY ═══
-• Name: Milley
-• Tone: natural and conversational — like a real person on the phone, \
-not a chatbot.  Warm, casual, and helpful.
-• Opening line (EVERY call): "Hi there! I'm Milley from MarsMan. \
-How can I help you today?"
-• Closing line (EVERY call): "Thanks for calling MarsMan! Have a great \
-day — reach out anytime if you need anything."
+• Name: Sarah
+• Tone: natural and conversational — like a real person on the phone. Warm, professional, and empathetic.
+• Opening line (EVERY call): "Hello! Thank you for calling The Wellness Clinic. This is Sarah speaking. How can I help you today?"
+• Closing line (EVERY call): "Thank you for calling The Wellness Clinic. Have a wonderful day!"
 
 ═══ SPEAKING STYLE ═══
-• Talk like a real human on a phone call.  Use SHORT sentences.
-• NEVER give long paragraphs.  One or two sentences at a time is ideal.
+• Talk like a real human on a phone call. Use SHORT sentences.
+• NEVER give long paragraphs. One or two sentences at a time is ideal.
 • Use everyday language — no corporate jargon or stiff phrasing.
-• Pause naturally between ideas.  Don't dump all info at once.
-• If you have multiple things to say, break them up across turns.
-• Match the caller's energy — if they're casual, be casual back.
-• Use filler words sparingly (e.g. "sure", "gotcha", "absolutely") \
-to sound natural.
-• Avoid repeating the same information the caller already knows.
+• Pause naturally between ideas. Don't dump all info at once.
 
 ═══ BUSINESS INFORMATION ═══
-Company: MarsMan — AI Solution Provider
-Business Hours: Monday–Saturday, 9 AM – 7 PM (closed Sundays)
-How to get started: phone call, website, or walk-in at our office.
-Pricing philosophy: mid-range and affordable; exact quotes depend \
-on scope.
-
-Products & Services:
-1. Custom AI Chatbots & Voice Agents
-2. AI-Powered Business Intelligence
-3. Workflow Automation
-4. Computer Vision Solutions
-5. AI Strategy Consulting
+Clinic: The Wellness Clinic — General Healthcare and Wellness Services
+Business Hours: Monday–Friday, 8 AM – 6 PM | Saturday, 9 AM – 2 PM (closed Sundays)
+Location: 123 Health Ave, Wellness City
 
 ═══ KNOWLEDGE SCOPE ═══
-You can help with: general enquiries, product info, pricing guidance, \
-onboarding timelines, business hours & contacts.
+You can help with: booking appointments, rescheduling or cancelling existing ones, sharing clinic hours, and providing general clinic information.
+
+═══ APPOINTMENT MANAGEMENT ═══
+• When a patient wants to book, ask for their name, preferred date, and time.
+• Use the `book_appointment` tool to finalize the booking.
+• To reschedule, ask for the original date and the new preferred date/time, then use `reschedule_appointment`.
+• To cancel, ask for the appointment date and use `cancel_appointment`.
+• Always confirm the details back to the patient before calling the tool.
+• IMPORTANT: After EVERY appointment action (booking, rescheduling, or cancelling), ALWAYS ask: "Is there anything else I can help you with?"
 
 ═══ BEHAVIOR GUIDELINES ═══
 • Listen first, then respond briefly.
-• Ask one clarifying question at a time — don't overwhelm the caller.
-• If you don't know something, say so and offer to connect them.
-• Always thank the caller and make them feel valued.
+• Ask one clarifying question at a time.
+• If you don't know something, offer to connect them to a human manager.
 
 ═══ CALL TRANSFER ═══
-• If the caller asks to speak with a real person, a human, \
-or a manager — use the transfer_to_human tool to forward the call.
-• Before transferring, say something brief like: \
-"Sure, let me connect you right away."
-• Do NOT offer to transfer unless the caller asks for it or is \
-clearly frustrated.  Try to help them yourself first.
-• After calling the tool, do NOT say anything further — the call will \
-be handed off automatically.
-
-═══ HARD LIMITS ═══
-• Do NOT invent specific pricing numbers.
-• Do NOT promise specific delivery dates.
-• Do NOT speak negatively about competitors.
-• Do NOT go outside MarsMan's business scope.
-• For exact pricing say: "For exact pricing, I'd recommend speaking \
-with our team or checking our website."
+• If the caller asks to speak with a human or a manager — use the transfer_to_human tool immediately. The tool will handle the verbal acknowledgment automatically.
 """
 
 # =============================================================================
@@ -294,7 +268,7 @@ def prewarm(proc):  # noqa: ANN001
         #   HIGHER → more tolerant of natural pauses but feels sluggish
         #   Phone calls often benefit from 0.6–0.9 s because mobile networks
         #   can add jitter that creates artificial gaps in speech.
-        min_silence_duration=0.7,
+        min_silence_duration=0.6,
         #
         # prefix_padding_duration (seconds, default 0.5):
         #   Audio to prepend before each detected speech chunk.  This ensures
@@ -363,6 +337,13 @@ class VoiceAssistant(Agent):
             # Prevent the user from interrupting mid-transfer
             context.disallow_interruptions()
 
+            # Verbally acknowledge the transfer before initiating it
+            session = context.session
+            await session.say(
+                "Sure, let me transfer you to our support team right away. Please hold on.",
+                allow_interruptions=False,
+            )
+
             logger.info(
                 "📞 Transferring: room=%s, participant=%s, to=%s",
                 self._room.name,
@@ -390,6 +371,143 @@ class VoiceAssistant(Agent):
                 "I'm sorry, I wasn't able to transfer the call right now. "
                 "Please try calling our office directly for assistance."
             )
+
+    @function_tool()
+    async def book_appointment(
+        self,
+        context: RunContext,
+        name: str,
+        date: str,
+        time: str,
+        notes: str = "",
+    ) -> str:
+        """Book a new appointment for the patient.
+
+        Args:
+            name: The patient's full name.
+            date: The date of the appointment (e.g., '2026-03-20').
+            time: The time of the appointment (e.g., '10:00 AM').
+            notes: Any additional notes or reasons for the visit.
+        """
+        logger.info("🔧 book_appointment tool invoked: %s on %s at %s", name, date, time)
+        try:
+            # Acknowledge verbally so the caller isn't left in silence
+            session = context.session
+            await session.say(
+                "Thank you! Booking your appointment now, just one moment.",
+                allow_interruptions=False,
+            )
+
+            airtable = AirtableApi(AIRTABLE_PAT)
+            table = airtable.table(AIRTABLE_BASE_ID, os.getenv("AIRTABLE_APPOINTMENTS_TABLE_NAME", "appointments"))
+
+            record = {
+                "patient_name": name,
+                "patient_phone": self._participant_identity,  # Using identity as phone
+                "appointment_date": date,
+                "appointment_time": time,
+                "status": "Booked",
+                "notes": notes,
+            }
+
+            table.create(record)
+            logger.info("✅ Appointment booked for %s", name)
+            return f"Success! I've booked your appointment for {date} at {time}. We look forward to seeing you."
+        except Exception as exc:
+            logger.error("❌ Failed to book appointment: %s", exc, exc_info=True)
+            return "I'm sorry, I encountered an error while booking your appointment. Please wait a moment or call us again."
+
+    @function_tool()
+    async def reschedule_appointment(
+        self,
+        context: RunContext,
+        current_date: str,
+        new_date: str,
+        new_time: str,
+    ) -> str:
+        """Reschedule an existing appointment.
+
+        Args:
+            current_date: The date of the existing appointment to be changed.
+            new_date: The new date for the appointment.
+            new_time: The new time for the appointment.
+        """
+        logger.info("🔧 reschedule_appointment tool invoked: from %s to %s at %s", current_date, new_date, new_time)
+        try:
+            # Acknowledge verbally so the caller isn't left in silence
+            session = context.session
+            await session.say(
+                "Got it! Rescheduling your appointment now, one moment please.",
+                allow_interruptions=False,
+            )
+
+            airtable = AirtableApi(AIRTABLE_PAT)
+            table = airtable.table(AIRTABLE_BASE_ID, os.getenv("AIRTABLE_APPOINTMENTS_TABLE_NAME", "appointments"))
+
+            # Find the existing record for this phone number
+            formula = f"{{patient_phone}} = '{self._participant_identity}'"
+            records = table.all(formula=formula)
+
+            # Filter for the specific date and active status in Python
+            match = [r for r in records if r['fields'].get('appointment_date') == current_date and r['fields'].get('status') != 'Cancelled']
+
+            if not match:
+                return f"I couldn't find an active appointment for you on {current_date}."
+
+            # Update the first matching record
+            record_id = match[0]["id"]
+            table.update(record_id, {
+                "appointment_date": new_date,
+                "appointment_time": new_time,
+                "status": "Rescheduled"
+            })
+
+            logger.info("✅ Appointment rescheduled to %s", new_date)
+            return f"Your appointment has been successfully rescheduled to {new_date} at {new_time}."
+        except Exception as exc:
+            logger.error("❌ Failed to reschedule appointment: %s", exc, exc_info=True)
+            return "I'm sorry, I was unable to reschedule your appointment right now."
+
+    @function_tool()
+    async def cancel_appointment(
+        self,
+        context: RunContext,
+        date: str,
+    ) -> str:
+        """Cancel an existing appointment.
+
+        Args:
+            date: The date of the appointment to cancel.
+        """
+        logger.info("🔧 cancel_appointment tool invoked: %s", date)
+        try:
+            # Acknowledge verbally so the caller isn't left in silence
+            session = context.session
+            await session.say(
+                "Alright, cancelling your appointment now. Just a moment.",
+                allow_interruptions=False,
+            )
+
+            airtable = AirtableApi(AIRTABLE_PAT)
+            table = airtable.table(AIRTABLE_BASE_ID, os.getenv("AIRTABLE_APPOINTMENTS_TABLE_NAME", "appointments"))
+
+            formula = f"{{patient_phone}} = '{self._participant_identity}'"
+            records = table.all(formula=formula)
+
+            # Filter for the specific date and active status in Python
+            match = [r for r in records if r['fields'].get('appointment_date') == date and r['fields'].get('status') != 'Cancelled']
+
+            if not match:
+                return f"I couldn't find an active appointment for you on {date}."
+
+            record_id = match[0]["id"]
+            table.update(record_id, {"status": "Cancelled"})
+
+            logger.info("✅ Appointment cancelled for %s", date)
+            return f"Your appointment on {date} has been cancelled as requested."
+        except Exception as exc:
+            logger.error("❌ Failed to cancel appointment: %s", exc, exc_info=True)
+            return "I'm sorry, I couldn't cancel your appointment at this time."
 
 # =============================================================================
 #  ENTRYPOINT — called once per inbound call
