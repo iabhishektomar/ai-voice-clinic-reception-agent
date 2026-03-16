@@ -21,6 +21,7 @@ import logging
 import os
 import re
 import time
+import traceback
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -72,6 +73,10 @@ from livekit.agents import (
 # ── LiveKit plugins ──────────────────────────────────────────────────────────
 from livekit.plugins import cartesia, deepgram, google, silero
 
+# ── Warm Transfer (attended handoff) ─────────────────────────────────────────
+from custom_warm_transfer import CustomWarmTransferTask
+from livekit.agents.llm import ToolError
+
 # ── Airtable ─────────────────────────────────────────────────────────────────
 from pyairtable import Api as AirtableApi
 
@@ -108,6 +113,14 @@ AIRTABLE_TABLE_NAME = os.getenv("AIRTABLE_TABLE_NAME", "call_logs")
 # The phone number to forward calls to when the caller asks to speak to a human.
 # Must be in E.164 format, e.g. +15551234567 or +918529103161
 TRANSFER_PHONE_NUMBER = os.getenv("TRANSFER_PHONE_NUMBER", "")
+# The LiveKit SIP Outbound Trunk ID required to dial out.
+SIP_TRUNK_ID = os.getenv("LIVEKIT_SIP_OUTBOUND_TRUNK", "")
+# The Caller-ID phone number used when the agent dials out.
+SIP_NUMBER = os.getenv("LIVEKIT_SIP_NUMBER", "")
+
+print(f"DEBUG: TRANSFER_PHONE_NUMBER='{TRANSFER_PHONE_NUMBER}'")
+print(f"DEBUG: SIP_TRUNK_ID='{SIP_TRUNK_ID}'")
+print(f"DEBUG: SIP_NUMBER='{SIP_NUMBER}'")
 
 # ── Agent behaviour ───────────────────────────────────────────────────────────
 # Maximum call duration in seconds.  After this limit the agent says goodbye
@@ -313,64 +326,65 @@ class VoiceAssistant(Agent):
         self._room = room
         self._participant_identity = participant_identity
 
-    @function_tool()
-    async def transfer_to_human(
-        self,
-        context: RunContext,
-    ) -> str:
-        """Transfer the caller to a human representative.
+    @function_tool
+    async def transfer_to_human(self) -> None:
+        """Called when the user asks to speak to a human agent. This will put
+        the user on hold while the human representative is connected.
 
-        Use this tool ONLY when the caller explicitly asks to speak with a
-        real person, a human agent, or a manager.  The call will be forwarded
-        to the support line and this session will end.
+        Ensure the user has confirmed they want to be transferred before
+        calling this tool.
         """
-        logger.info("🔧 transfer_to_human tool invoked")
+        logger.info("🔧 transfer_to_human tool invoked (warm transfer)")
 
         if not TRANSFER_PHONE_NUMBER:
             logger.warning("⚠️ TRANSFER_PHONE_NUMBER not set")
-            return (
-                "I'm sorry, call forwarding is not configured at the moment. "
+            raise ToolError(
+                "Call forwarding is not configured at the moment. "
                 "Please try calling our office directly."
             )
 
+        logger.info(
+            "📞 Warm transfer: room=%s, participant=%s, dialling=%s, trunk=%s, caller_id=%s",
+            self._room.name,
+            self._participant_identity,
+            TRANSFER_PHONE_NUMBER,
+            SIP_TRUNK_ID,
+            SIP_NUMBER,
+        )
+
+        await self.session.say(
+            "Sure, let me connect you with our support team. "
+            "Please hold on while I reach them.",
+            allow_interruptions=False,
+        )
+
         try:
-            # Prevent the user from interrupting mid-transfer
-            context.disallow_interruptions()
-
-            # Verbally acknowledge the transfer before initiating it
-            session = context.session
-            await session.say(
-                "Sure, let me transfer you to our support team right away. Please hold on.",
-                allow_interruptions=False,
+            # CustomWarmTransferTask includes the 403 fix (wait_until_answered=False)
+            result = await CustomWarmTransferTask(
+                target_phone_number=TRANSFER_PHONE_NUMBER,
+                chat_ctx=self.chat_ctx,
+                sip_trunk_id=SIP_TRUNK_ID,
+                sip_number=SIP_NUMBER,
             )
+        except ToolError as e:
+            logger.error("❌ Warm transfer tool error: %s", e)
+            traceback.print_exc()
+            raise e
+        except Exception as e:
+            logger.exception("❌ Warm transfer failed")
+            traceback.print_exc()
+            raise ToolError(f"Failed to transfer call: {e}") from e
 
-            logger.info(
-                "📞 Transferring: room=%s, participant=%s, to=%s",
-                self._room.name,
-                self._participant_identity,
-                TRANSFER_PHONE_NUMBER,
-            )
-
-            # Perform the SIP cold transfer via LiveKit API
-            lk = api.LiveKitAPI()
-            await lk.sip.transfer_sip_participant(
-                api.TransferSIPParticipantRequest(
-                    room_name=self._room.name,
-                    participant_identity=self._participant_identity,
-                    transfer_to=f"tel:{TRANSFER_PHONE_NUMBER}",
-                    play_dialtone=True,
-                ),
-            )
-            await lk.aclose()
-            logger.info("✅ Call transferred to %s", TRANSFER_PHONE_NUMBER)
-            return "Call transferred successfully."
-
-        except Exception as exc:
-            logger.error("❌ Call transfer failed: %s", exc, exc_info=True)
-            return (
-                "I'm sorry, I wasn't able to transfer the call right now. "
-                "Please try calling our office directly for assistance."
-            )
+        logger.info(
+            "✅ Warm transfer complete — human agent: %s",
+            result.human_agent_identity,
+        )
+        await self.session.say(
+            "You are now connected with our team. I'll be hanging up now. "
+            "Thank you for calling The Wellness Clinic!",
+            allow_interruptions=False,
+        )
+        self.session.shutdown()
 
     @function_tool()
     async def book_appointment(
