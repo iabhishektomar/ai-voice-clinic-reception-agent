@@ -62,6 +62,7 @@ from livekit.agents import (
     AgentSession,
     AutoSubscribe,
     JobContext,
+    MetricsCollectedEvent,
     RunContext,
     WorkerOptions,
     cli,
@@ -72,6 +73,7 @@ from livekit.agents import (
 
 # ── LiveKit plugins ──────────────────────────────────────────────────────────
 from livekit.plugins import cartesia, deepgram, google, silero
+
 
 # ── Warm Transfer (attended handoff) ─────────────────────────────────────────
 from custom_warm_transfer import CustomWarmTransferTask
@@ -281,7 +283,7 @@ def prewarm(proc):  # noqa: ANN001
         #   HIGHER → more tolerant of natural pauses but feels sluggish
         #   Phone calls often benefit from 0.6–0.9 s because mobile networks
         #   can add jitter that creates artificial gaps in speech.
-        min_silence_duration=0.6,
+        min_silence_duration=0.5,
         #
         # prefix_padding_duration (seconds, default 0.5):
         #   Audio to prepend before each detected speech chunk.  This ensures
@@ -616,10 +618,25 @@ async def entrypoint(ctx: JobContext) -> None:
                 logger.info("Agent said:  %s", text)
                 transcript_entries.append(f"Agent:  {text}")
 
+    # ── Metrics collection (observability) ─────────────────────────────────────
+    usage_collector = metrics.UsageCollector()
+
+    @session.on("metrics_collected")
+    def _on_metrics_collected(ev: MetricsCollectedEvent):
+        metrics.log_metrics(ev.metrics)
+        usage_collector.collect(ev.metrics)
+
+    async def log_usage():
+        summary = usage_collector.get_summary()
+        logger.info("📊 Usage summary: %s", summary)
+
+    ctx.add_shutdown_callback(log_usage)
+
     # ── Start the agent ───────────────────────────────────────────────────────
     await session.start(
         agent=VoiceAssistant(room=ctx.room, participant_identity=participant.identity),
         room=ctx.room,
+        record=True,  # Enable transcripts, traces, logs, and audio recording
     )
 
     # Greet the caller
