@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Python: class AgentSession</title>
+</head><body>
+<p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="AgentSession">class <strong>AgentSession</strong></a>(<a href="livekit.rtc.event_emitter.html#EventEmitter">livekit.rtc.event_emitter.EventEmitter</a>, <a href="typing.html#Generic">typing.Generic</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code">AgentSession(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;turn_detection:&nbsp;NotGivenOr[TurnDetectionMode]&nbsp;=&nbsp;NOT_GIVEN,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;stt:&nbsp;NotGivenOr[stt.STT&nbsp;|&nbsp;STTModels&nbsp;|&nbsp;str]&nbsp;=&nbsp;NOT_GIVEN,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vad:&nbsp;NotGivenOr[vad.VAD]&nbsp;=&nbsp;NOT_GIVEN,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;llm:&nbsp;NotGivenOr[llm.LLM&nbsp;|&nbsp;llm.RealtimeModel&nbsp;|&nbsp;LLMModels&nbsp;|&nbsp;str]&nbsp;=&nbsp;NOT_GIVEN,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;tts:&nbsp;NotGivenOr[tts.TTS&nbsp;|&nbsp;TTSModels&nbsp;|&nbsp;str]&nbsp;=&nbsp;NOT_GIVEN,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;tools:&nbsp;NotGivenOr[list[llm.Tool&nbsp;|&nbsp;llm.Toolset]]&nbsp;=&nbsp;NOT_GIVEN,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;mcp_servers:&nbsp;NotGivenOr[list[mcp.MCPServer]]&nbsp;=&nbsp;NOT_GIVEN,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;userdata:&nbsp;NotGivenOr[Userdata_T]&nbsp;=&nbsp;NOT_GIVEN,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;allow_interruptions:&nbsp;bool&nbsp;=&nbsp;True,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;discard_audio_if_uninterruptible:&nbsp;bool&nbsp;=&nbsp;True,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;min_interruption_duration:&nbsp;float&nbsp;=&nbsp;0.5,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;min_interruption_words:&nbsp;int&nbsp;=&nbsp;0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;min_endpointing_delay:&nbsp;float&nbsp;=&nbsp;0.5,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;max_endpointing_delay:&nbsp;float&nbsp;=&nbsp;3.0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;max_tool_steps:&nbsp;int&nbsp;=&nbsp;3,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;video_sampler:&nbsp;NotGivenOr[_VideoSampler&nbsp;|&nbsp;None]&nbsp;=&nbsp;NOT_GIVEN,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;user_away_timeout:&nbsp;float&nbsp;|&nbsp;None&nbsp;=&nbsp;15.0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;false_interruption_timeout:&nbsp;float&nbsp;|&nbsp;None&nbsp;=&nbsp;2.0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;resume_false_interruption:&nbsp;bool&nbsp;=&nbsp;True,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;min_consecutive_speech_delay:&nbsp;float&nbsp;=&nbsp;0.0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;use_tts_aligned_transcript:&nbsp;NotGivenOr[bool]&nbsp;=&nbsp;NOT_GIVEN,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;tts_text_transforms:&nbsp;NotGivenOr[Sequence[TextTransforms]&nbsp;|&nbsp;None]&nbsp;=&nbsp;NOT_GIVEN,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;preemptive_generation:&nbsp;bool&nbsp;=&nbsp;False,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;aec_warmup_duration:&nbsp;float&nbsp;|&nbsp;None&nbsp;=&nbsp;3.0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ivr_detection:&nbsp;bool&nbsp;=&nbsp;False,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;conn_options:&nbsp;NotGivenOr[SessionConnectOptions]&nbsp;=&nbsp;NOT_GIVEN,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;loop:&nbsp;asyncio.AbstractEventLoop&nbsp;|&nbsp;None&nbsp;=&nbsp;None,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;agent_false_interruption_timeout:&nbsp;NotGivenOr[float&nbsp;|&nbsp;None]&nbsp;=&nbsp;NOT_GIVEN<br>
+)&nbsp;-&amp;gt;&nbsp;None<br>
+&nbsp;<br>
+<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn"><dl><dt>Method resolution order:</dt>
+<dd><a href="livekit.agents.voice.agent_session.html#AgentSession">AgentSession</a></dd>
+<dd><a href="livekit.rtc.event_emitter.html#EventEmitter">livekit.rtc.event_emitter.EventEmitter</a></dd>
+<dd><a href="typing.html#Generic">typing.Generic</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt>async <a name="AgentSession-__aenter__"><strong>__aenter__</strong></a>(self) -&gt; AgentSession</dt></dl>
+
+<dl><dt>async <a name="AgentSession-__aexit__"><strong>__aexit__</strong></a>(
+    self,
+    exc_type: type[BaseException] | None,
+    exc: BaseException | None,
+    exc_tb: TracebackType | None
+) -&gt; None</dt></dl>
+
+<dl><dt><a name="AgentSession-__init__"><strong>__init__</strong></a>(
+    self,
+    *,
+    turn_detection: NotGivenOr[TurnDetectionMode] = NOT_GIVEN,
+    stt: NotGivenOr[stt.STT | STTModels | str] = NOT_GIVEN,
+    vad: NotGivenOr[vad.VAD] = NOT_GIVEN,
+    llm: NotGivenOr[llm.LLM | llm.RealtimeModel | LLMModels | str] = NOT_GIVEN,
+    tts: NotGivenOr[tts.TTS | TTSModels | str] = NOT_GIVEN,
+    tools: NotGivenOr[list[llm.Tool | llm.Toolset]] = NOT_GIVEN,
+    mcp_servers: NotGivenOr[list[mcp.MCPServer]] = NOT_GIVEN,
+    userdata: NotGivenOr[Userdata_T] = NOT_GIVEN,
+    allow_interruptions: bool = True,
+    discard_audio_if_uninterruptible: bool = True,
+    min_interruption_duration: float = 0.5,
+    min_interruption_words: int = 0,
+    min_endpointing_delay: float = 0.5,
+    max_endpointing_delay: float = 3.0,
+    max_tool_steps: int = 3,
+    video_sampler: NotGivenOr[_VideoSampler | None] = NOT_GIVEN,
+    user_away_timeout: float | None = 15.0,
+    false_interruption_timeout: float | None = 2.0,
+    resume_false_interruption: bool = True,
+    min_consecutive_speech_delay: float = 0.0,
+    use_tts_aligned_transcript: NotGivenOr[bool] = NOT_GIVEN,
+    tts_text_transforms: NotGivenOr[Sequence[TextTransforms] | None] = NOT_GIVEN,
+    preemptive_generation: bool = False,
+    aec_warmup_duration: float | None = 3.0,
+    ivr_detection: bool = False,
+    conn_options: NotGivenOr[SessionConnectOptions] = NOT_GIVEN,
+    loop: asyncio.AbstractEventLoop | None = None,
+    agent_false_interruption_timeout: NotGivenOr[float | None] = NOT_GIVEN
+) -&gt; None</dt><dd><span class="code">`AgentSession`&nbsp;is&nbsp;the&nbsp;LiveKit&nbsp;Agents&nbsp;runtime&nbsp;that&nbsp;glues&nbsp;together<br>
+media&nbsp;streams,&nbsp;speech/LLM&nbsp;components,&nbsp;and&nbsp;tool&nbsp;orchestration&nbsp;into&nbsp;a<br>
+single&nbsp;real-time&nbsp;voice&nbsp;agent.<br>
+&nbsp;<br>
+It&nbsp;links&nbsp;audio,&nbsp;video,&nbsp;and&nbsp;text&nbsp;I/O&nbsp;with&nbsp;STT,&nbsp;VAD,&nbsp;TTS,&nbsp;and&nbsp;the&nbsp;LLM;<br>
+handles&nbsp;turn&nbsp;detection,&nbsp;endpointing,&nbsp;interruptions,&nbsp;and&nbsp;multi-step<br>
+tool&nbsp;calls;&nbsp;and&nbsp;exposes&nbsp;everything&nbsp;through&nbsp;event&nbsp;callbacks&nbsp;so&nbsp;you&nbsp;can<br>
+focus&nbsp;on&nbsp;writing&nbsp;function&nbsp;tools&nbsp;and&nbsp;simple&nbsp;hand-offs&nbsp;rather&nbsp;than<br>
+low-level&nbsp;streaming&nbsp;logic.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;turn_detection&nbsp;(TurnDetectionMode,&nbsp;optional):&nbsp;Strategy&nbsp;for&nbsp;deciding<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;when&nbsp;the&nbsp;user&nbsp;has&nbsp;finifshed&nbsp;speaking.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;``"stt"``&nbsp;–&nbsp;rely&nbsp;on&nbsp;speech-to-text&nbsp;end-of-utterance&nbsp;cues<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;``"vad"``&nbsp;–&nbsp;rely&nbsp;on&nbsp;Voice&nbsp;Activity&nbsp;Detection&nbsp;start/stop&nbsp;cues<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;``"realtime_llm"``&nbsp;–&nbsp;use&nbsp;server-side&nbsp;detection&nbsp;from&nbsp;a<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;realtime&nbsp;LLM<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;``"manual"``&nbsp;–&nbsp;caller&nbsp;controls&nbsp;turn&nbsp;boundaries&nbsp;explicitly<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;``_TurnDetector``&nbsp;instance&nbsp;–&nbsp;plug-in&nbsp;custom&nbsp;detector<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;*NOT_GIVEN*,&nbsp;the&nbsp;session&nbsp;chooses&nbsp;the&nbsp;best&nbsp;available&nbsp;mode&nbsp;in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;priority&nbsp;order&nbsp;``realtime_llm&nbsp;→&nbsp;vad&nbsp;→&nbsp;stt&nbsp;→&nbsp;manual``;&nbsp;it<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;automatically&nbsp;falls&nbsp;back&nbsp;if&nbsp;the&nbsp;necessary&nbsp;model&nbsp;is&nbsp;missing.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;stt&nbsp;(stt.STT&nbsp;|&nbsp;str,&nbsp;optional):&nbsp;Speech-to-text&nbsp;backend.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vad&nbsp;(vad.VAD,&nbsp;optional):&nbsp;Voice-activity&nbsp;detector<br>
+&nbsp;&nbsp;&nbsp;&nbsp;llm&nbsp;(llm.LLM&nbsp;|&nbsp;llm.RealtimeModel&nbsp;|&nbsp;str,&nbsp;optional):&nbsp;LLM&nbsp;or&nbsp;RealtimeModel<br>
+&nbsp;&nbsp;&nbsp;&nbsp;tts&nbsp;(tts.TTS&nbsp;|&nbsp;str,&nbsp;optional):&nbsp;Text-to-speech&nbsp;engine.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;tools&nbsp;(list[llm.FunctionTool&nbsp;|&nbsp;llm.RawFunctionTool],&nbsp;optional):&nbsp;List&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tools&nbsp;shared&nbsp;by&nbsp;every&nbsp;agent&nbsp;in&nbsp;the&nbsp;agent&nbsp;session.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;mcp_servers&nbsp;(list[mcp.MCPServer],&nbsp;optional):&nbsp;List&nbsp;of&nbsp;MCP&nbsp;servers<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;providing&nbsp;external&nbsp;tools&nbsp;for&nbsp;the&nbsp;agent&nbsp;to&nbsp;use.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;userdata&nbsp;(Userdata_T,&nbsp;optional):&nbsp;Arbitrary&nbsp;per-session&nbsp;user&nbsp;data.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;allow_interruptions&nbsp;(bool):&nbsp;Whether&nbsp;the&nbsp;user&nbsp;can&nbsp;interrupt&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;agent&nbsp;mid-utterance.&nbsp;Default&nbsp;``True``.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;discard_audio_if_uninterruptible&nbsp;(bool):&nbsp;When&nbsp;``True``,&nbsp;buffered<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;audio&nbsp;is&nbsp;dropped&nbsp;while&nbsp;the&nbsp;agent&nbsp;is&nbsp;speaking&nbsp;and&nbsp;cannot&nbsp;be<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;interrupted.&nbsp;Default&nbsp;``True``.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;min_interruption_duration&nbsp;(float):&nbsp;Minimum&nbsp;speech&nbsp;length&nbsp;(s)&nbsp;to<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;register&nbsp;as&nbsp;an&nbsp;interruption.&nbsp;Default&nbsp;``0.5``&nbsp;s.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;min_interruption_words&nbsp;(int):&nbsp;Minimum&nbsp;number&nbsp;of&nbsp;words&nbsp;to&nbsp;consider<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;an&nbsp;interruption,&nbsp;only&nbsp;used&nbsp;if&nbsp;stt&nbsp;enabled.&nbsp;Default&nbsp;``0``.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;min_endpointing_delay&nbsp;(float):&nbsp;Minimum&nbsp;time-in-seconds&nbsp;since&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;last&nbsp;detected&nbsp;speech&nbsp;before&nbsp;the&nbsp;agent&nbsp;declares&nbsp;the&nbsp;user’s&nbsp;turn<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;complete.&nbsp;In&nbsp;VAD&nbsp;mode&nbsp;this&nbsp;effectively&nbsp;behaves&nbsp;like<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;max(VAD&nbsp;silence,&nbsp;min_endpointing_delay);&nbsp;in&nbsp;STT&nbsp;mode&nbsp;it&nbsp;is<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;applied&nbsp;after&nbsp;the&nbsp;STT&nbsp;end-of-speech&nbsp;signal,&nbsp;so&nbsp;it&nbsp;can&nbsp;be<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;additive&nbsp;with&nbsp;the&nbsp;STT&nbsp;provider’s&nbsp;endpointing&nbsp;delay.&nbsp;Default<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;``0.5``&nbsp;s.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;max_endpointing_delay&nbsp;(float):&nbsp;Maximum&nbsp;time-in-seconds&nbsp;the&nbsp;agent<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;will&nbsp;wait&nbsp;before&nbsp;terminating&nbsp;the&nbsp;turn.&nbsp;Default&nbsp;``3.0``&nbsp;s.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;max_tool_steps&nbsp;(int):&nbsp;Maximum&nbsp;consecutive&nbsp;tool&nbsp;calls&nbsp;per&nbsp;LLM&nbsp;turn.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Default&nbsp;``3``.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;video_sampler&nbsp;(_VideoSampler,&nbsp;optional):&nbsp;Uses<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:class:`VoiceActivityVideoSampler`&nbsp;when&nbsp;*NOT_GIVEN*;&nbsp;that&nbsp;sampler<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;captures&nbsp;video&nbsp;at&nbsp;~1&nbsp;fps&nbsp;while&nbsp;the&nbsp;user&nbsp;is&nbsp;speaking&nbsp;and&nbsp;~0.3&nbsp;fps<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;when&nbsp;silent&nbsp;by&nbsp;default.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;user_away_timeout&nbsp;(float,&nbsp;optional):&nbsp;If&nbsp;set,&nbsp;set&nbsp;the&nbsp;user&nbsp;state&nbsp;as<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"away"&nbsp;after&nbsp;this&nbsp;amount&nbsp;of&nbsp;time&nbsp;after&nbsp;user&nbsp;and&nbsp;agent&nbsp;are&nbsp;silent.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Default&nbsp;``15.0``&nbsp;s,&nbsp;set&nbsp;to&nbsp;``None``&nbsp;to&nbsp;disable.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;false_interruption_timeout&nbsp;(float,&nbsp;optional):&nbsp;If&nbsp;set,&nbsp;emit&nbsp;an<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`agent_false_interruption`&nbsp;event&nbsp;after&nbsp;this&nbsp;amount&nbsp;of&nbsp;time&nbsp;if<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;user&nbsp;is&nbsp;silent&nbsp;and&nbsp;no&nbsp;user&nbsp;transcript&nbsp;is&nbsp;detected&nbsp;after<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;interruption.&nbsp;Set&nbsp;to&nbsp;``None``&nbsp;to&nbsp;disable.&nbsp;Default&nbsp;``2.0``&nbsp;s.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;resume_false_interruption&nbsp;(bool):&nbsp;Whether&nbsp;to&nbsp;resume&nbsp;the&nbsp;false&nbsp;interruption<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;after&nbsp;the&nbsp;false_interruption_timeout.&nbsp;Default&nbsp;``True``.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;min_consecutive_speech_delay&nbsp;(float,&nbsp;optional):&nbsp;The&nbsp;minimum&nbsp;delay&nbsp;between<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;consecutive&nbsp;speech.&nbsp;Default&nbsp;``0.0``&nbsp;s.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;use_tts_aligned_transcript&nbsp;(bool,&nbsp;optional):&nbsp;Whether&nbsp;to&nbsp;use&nbsp;TTS-aligned<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;transcript&nbsp;as&nbsp;the&nbsp;input&nbsp;of&nbsp;the&nbsp;``transcription_node``.&nbsp;Only&nbsp;applies<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;``TTS.capabilities.aligned_transcript``&nbsp;is&nbsp;``True``&nbsp;or&nbsp;``streaming``<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;is&nbsp;``False``.&nbsp;When&nbsp;NOT_GIVEN,&nbsp;it's&nbsp;disabled.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;tts_text_transforms&nbsp;(Sequence[TextTransforms],&nbsp;optional):&nbsp;The&nbsp;transforms&nbsp;to&nbsp;apply<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;the&nbsp;tts&nbsp;input&nbsp;text,&nbsp;available&nbsp;built-in&nbsp;transforms:&nbsp;``"filter_markdown"``,&nbsp;``"filter_emoji"``.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Set&nbsp;to&nbsp;``None``&nbsp;to&nbsp;disable.&nbsp;When&nbsp;NOT_GIVEN,&nbsp;all&nbsp;filters&nbsp;will&nbsp;be&nbsp;applied.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;preemptive_generation&nbsp;(bool):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Whether&nbsp;to&nbsp;speculatively&nbsp;begin&nbsp;LLM&nbsp;and&nbsp;TTS&nbsp;requests&nbsp;before&nbsp;an&nbsp;end-of-turn&nbsp;is<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;detected.&nbsp;When&nbsp;True,&nbsp;the&nbsp;agent&nbsp;sends&nbsp;inference&nbsp;calls&nbsp;as&nbsp;soon&nbsp;as&nbsp;a&nbsp;user<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;transcript&nbsp;is&nbsp;received&nbsp;rather&nbsp;than&nbsp;waiting&nbsp;for&nbsp;a&nbsp;definitive&nbsp;turn&nbsp;boundary.&nbsp;This<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;can&nbsp;reduce&nbsp;response&nbsp;latency&nbsp;by&nbsp;overlapping&nbsp;model&nbsp;inference&nbsp;with&nbsp;user&nbsp;audio,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;but&nbsp;may&nbsp;incur&nbsp;extra&nbsp;compute&nbsp;if&nbsp;the&nbsp;user&nbsp;interrupts&nbsp;or&nbsp;revises&nbsp;mid-utterance.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Defaults&nbsp;to&nbsp;``False``.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;aec_warmup_duration&nbsp;(float,&nbsp;optional):&nbsp;The&nbsp;duration&nbsp;in&nbsp;seconds&nbsp;that&nbsp;the&nbsp;agent<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;will&nbsp;ignore&nbsp;user's&nbsp;audio&nbsp;interruptions&nbsp;after&nbsp;the&nbsp;agent&nbsp;starts&nbsp;speaking.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This&nbsp;is&nbsp;useful&nbsp;to&nbsp;prevent&nbsp;the&nbsp;agent&nbsp;from&nbsp;being&nbsp;interrupted&nbsp;by&nbsp;echo&nbsp;before&nbsp;AEC&nbsp;is&nbsp;ready.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Set&nbsp;to&nbsp;``None``&nbsp;to&nbsp;disable.&nbsp;Default&nbsp;``3.0``&nbsp;s.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ivr_detection&nbsp;(bool):&nbsp;Whether&nbsp;to&nbsp;detect&nbsp;if&nbsp;the&nbsp;agent&nbsp;is&nbsp;interacting&nbsp;with&nbsp;an&nbsp;IVR&nbsp;system.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Default&nbsp;``False``.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;conn_options&nbsp;(SessionConnectOptions,&nbsp;optional):&nbsp;Connection&nbsp;options&nbsp;for<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stt,&nbsp;llm,&nbsp;and&nbsp;tts.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;loop&nbsp;(asyncio.AbstractEventLoop,&nbsp;optional):&nbsp;Event&nbsp;loop&nbsp;to&nbsp;bind&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;session&nbsp;to.&nbsp;Falls&nbsp;back&nbsp;to&nbsp;:pyfunc:`asyncio.get_event_loop()`.</span></dd></dl>
+
+<dl><dt>async <a name="AgentSession-aclose"><strong>aclose</strong></a>(self) -&gt; None</dt></dl>
+
+<dl><dt><a name="AgentSession-clear_user_turn"><strong>clear_user_turn</strong></a>(self) -&gt; None</dt></dl>
+
+<dl><dt><a name="AgentSession-commit_user_turn"><strong>commit_user_turn</strong></a>(
+    self,
+    *,
+    transcript_timeout: float = 2.0,
+    stt_flush_duration: float = 2.0,
+    skip_reply: bool = False
+) -&gt; asyncio.Future[str]</dt><dd><span class="code">Commit&nbsp;the&nbsp;user&nbsp;turn&nbsp;and&nbsp;generate&nbsp;a&nbsp;reply.<br>
+&nbsp;<br>
+Returns&nbsp;a&nbsp;future&nbsp;that&nbsp;resolves&nbsp;with&nbsp;the&nbsp;user's&nbsp;audio&nbsp;transcript&nbsp;once&nbsp;STT<br>
+is&nbsp;complete&nbsp;and&nbsp;end-of-turn&nbsp;detection&nbsp;has&nbsp;been&nbsp;triggered.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;transcript_timeout&nbsp;(float,&nbsp;optional):&nbsp;The&nbsp;timeout&nbsp;for&nbsp;the&nbsp;final&nbsp;transcript<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;be&nbsp;received&nbsp;after&nbsp;committing&nbsp;the&nbsp;user&nbsp;turn.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Increase&nbsp;this&nbsp;value&nbsp;if&nbsp;the&nbsp;STT&nbsp;is&nbsp;slow&nbsp;to&nbsp;respond.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;stt_flush_duration&nbsp;(float,&nbsp;optional):&nbsp;The&nbsp;duration&nbsp;of&nbsp;the&nbsp;silence&nbsp;to&nbsp;be&nbsp;appended&nbsp;to&nbsp;the&nbsp;STT<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;flush&nbsp;the&nbsp;buffer&nbsp;and&nbsp;generate&nbsp;the&nbsp;final&nbsp;transcript.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;skip_reply&nbsp;(bool,&nbsp;optional):&nbsp;Whether&nbsp;to&nbsp;skip&nbsp;the&nbsp;reply&nbsp;generation&nbsp;after&nbsp;committing&nbsp;the&nbsp;user&nbsp;turn.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;asyncio.Future[str]:&nbsp;A&nbsp;future&nbsp;that&nbsp;resolves&nbsp;with&nbsp;the&nbsp;audio&nbsp;transcript.<br>
+&nbsp;<br>
+Raises:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;RuntimeError:&nbsp;If&nbsp;the&nbsp;AgentSession&nbsp;isn't&nbsp;running.</span></dd></dl>
+
+<dl><dt>async <a name="AgentSession-drain"><strong>drain</strong></a>(self) -&gt; None</dt></dl>
+
+<dl><dt><a name="AgentSession-emit"><strong>emit</strong></a>(self, event: EventTypes, arg: AgentEvent) -&gt; None</dt><dd><span class="code">Trigger&nbsp;all&nbsp;callbacks&nbsp;associated&nbsp;with&nbsp;the&nbsp;given&nbsp;event.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;event&nbsp;(T):&nbsp;The&nbsp;event&nbsp;to&nbsp;emit.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*args:&nbsp;Positional&nbsp;arguments&nbsp;to&nbsp;pass&nbsp;to&nbsp;the&nbsp;callbacks.<br>
+&nbsp;<br>
+Example:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Basic&nbsp;usage&nbsp;of&nbsp;emit:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;```python<br>
+&nbsp;&nbsp;&nbsp;&nbsp;emitter&nbsp;=&nbsp;EventEmitter[str]()<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;greet(name):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print(f"Hello,&nbsp;{name}!")<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;emitter.<a href="#AgentSession-on">on</a>('greet',&nbsp;greet)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;emitter.<a href="#AgentSession-emit">emit</a>('greet',&nbsp;'Alice')&nbsp;&nbsp;#&nbsp;Output:&nbsp;Hello,&nbsp;Alice!<br>
+&nbsp;&nbsp;&nbsp;&nbsp;```</span></dd></dl>
+
+<dl><dt><a name="AgentSession-generate_reply"><strong>generate_reply</strong></a>(
+    self,
+    *,
+    user_input: NotGivenOr[str | llm.ChatMessage] = NOT_GIVEN,
+    instructions: NotGivenOr[str | Instructions] = NOT_GIVEN,
+    tool_choice: NotGivenOr[llm.ToolChoice] = NOT_GIVEN,
+    allow_interruptions: NotGivenOr[bool] = NOT_GIVEN,
+    chat_ctx: NotGivenOr[ChatContext] = NOT_GIVEN,
+    input_modality: Literal['text', 'audio'] = 'text'
+) -&gt; SpeechHandle</dt><dd><span class="code">Generate&nbsp;a&nbsp;reply&nbsp;for&nbsp;the&nbsp;agent&nbsp;to&nbsp;speak&nbsp;to&nbsp;the&nbsp;user.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;user_input&nbsp;(NotGivenOr[str&nbsp;|&nbsp;llm.ChatMessage],&nbsp;optional):&nbsp;The&nbsp;user's&nbsp;input&nbsp;that&nbsp;may&nbsp;influence&nbsp;the&nbsp;reply,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;such&nbsp;as&nbsp;answering&nbsp;a&nbsp;question.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;instructions&nbsp;(NotGivenOr[str],&nbsp;optional):&nbsp;Additional&nbsp;instructions&nbsp;for&nbsp;generating&nbsp;the&nbsp;reply.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;tool_choice&nbsp;(NotGivenOr[llm.ToolChoice],&nbsp;optional):&nbsp;Specifies&nbsp;the&nbsp;external&nbsp;tool&nbsp;to&nbsp;use&nbsp;when<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;generating&nbsp;the&nbsp;reply.&nbsp;If&nbsp;generate_reply&nbsp;is&nbsp;invoked&nbsp;within&nbsp;a&nbsp;function_tool,&nbsp;defaults&nbsp;to&nbsp;"none".<br>
+&nbsp;&nbsp;&nbsp;&nbsp;allow_interruptions&nbsp;(NotGivenOr[bool],&nbsp;optional):&nbsp;Indicates&nbsp;whether&nbsp;the&nbsp;user&nbsp;can&nbsp;interrupt&nbsp;this&nbsp;speech.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;chat_ctx&nbsp;(NotGivenOr[ChatContext],&nbsp;optional):&nbsp;The&nbsp;chat&nbsp;context&nbsp;to&nbsp;use&nbsp;for&nbsp;generating&nbsp;the&nbsp;reply.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Defaults&nbsp;to&nbsp;the&nbsp;chat&nbsp;context&nbsp;of&nbsp;the&nbsp;current&nbsp;agent&nbsp;if&nbsp;not&nbsp;provided.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;input_modality&nbsp;(Literal["text",&nbsp;"audio"],&nbsp;optional):&nbsp;The&nbsp;input&nbsp;mode&nbsp;to&nbsp;use&nbsp;for&nbsp;generating&nbsp;the&nbsp;reply.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;SpeechHandle:&nbsp;A&nbsp;handle&nbsp;to&nbsp;the&nbsp;generated&nbsp;reply.</span></dd></dl>
+
+<dl><dt><a name="AgentSession-interrupt"><strong>interrupt</strong></a>(self, *, force: bool = False) -&gt; asyncio.Future[None]</dt><dd><span class="code">Interrupt&nbsp;the&nbsp;current&nbsp;speech&nbsp;generation.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;An&nbsp;asyncio.Future&nbsp;that&nbsp;completes&nbsp;when&nbsp;the&nbsp;interruption&nbsp;is&nbsp;fully&nbsp;processed<br>
+&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;chat&nbsp;context&nbsp;has&nbsp;been&nbsp;updated.</span></dd></dl>
+
+<dl><dt><a name="AgentSession-run"><strong>run</strong></a>(
+    self,
+    *,
+    user_input: str,
+    input_modality: Literal['text', 'audio'] = 'text',
+    output_type: type[Run_T] | None = None
+) -&gt; RunResult[Run_T]</dt></dl>
+
+<dl><dt><a name="AgentSession-say"><strong>say</strong></a>(
+    self,
+    text: str | AsyncIterable[str],
+    *,
+    audio: NotGivenOr[AsyncIterable[rtc.AudioFrame]] = NOT_GIVEN,
+    allow_interruptions: NotGivenOr[bool] = NOT_GIVEN,
+    add_to_chat_ctx: bool = True
+) -&gt; SpeechHandle</dt></dl>
+
+<dl><dt><a name="AgentSession-shutdown"><strong>shutdown</strong></a>(self, *, drain: bool = True) -&gt; None</dt></dl>
+
+<dl><dt>async <a name="AgentSession-start"><strong>start</strong></a>(
+    self,
+    agent: Agent,
+    *,
+    capture_run: bool = False,
+    room: NotGivenOr[rtc.Room] = NOT_GIVEN,
+    room_options: NotGivenOr[room_io.RoomOptions] = NOT_GIVEN,
+    record: NotGivenOr[bool | RecordingOptions] = NOT_GIVEN,
+    room_input_options: NotGivenOr[room_io.RoomInputOptions] = NOT_GIVEN,
+    room_output_options: NotGivenOr[room_io.RoomOutputOptions] = NOT_GIVEN
+) -&gt; RunResult | None</dt><dd><span class="code">Start&nbsp;the&nbsp;voice&nbsp;agent.<br>
+&nbsp;<br>
+Create&nbsp;a&nbsp;default&nbsp;RoomIO&nbsp;if&nbsp;the&nbsp;input&nbsp;or&nbsp;output&nbsp;audio&nbsp;is&nbsp;not&nbsp;already&nbsp;set.<br>
+If&nbsp;the&nbsp;console&nbsp;flag&nbsp;is&nbsp;provided,&nbsp;start&nbsp;a&nbsp;ChatCLI.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;capture_run:&nbsp;Whether&nbsp;to&nbsp;return&nbsp;a&nbsp;RunResult&nbsp;and&nbsp;capture&nbsp;the&nbsp;run&nbsp;result&nbsp;during&nbsp;session&nbsp;start.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;room:&nbsp;The&nbsp;room&nbsp;to&nbsp;use&nbsp;for&nbsp;input&nbsp;and&nbsp;output<br>
+&nbsp;&nbsp;&nbsp;&nbsp;room_input_options:&nbsp;Options&nbsp;for&nbsp;the&nbsp;room&nbsp;input<br>
+&nbsp;&nbsp;&nbsp;&nbsp;room_output_options:&nbsp;Options&nbsp;for&nbsp;the&nbsp;room&nbsp;output<br>
+&nbsp;&nbsp;&nbsp;&nbsp;record:&nbsp;Whether&nbsp;to&nbsp;record&nbsp;the&nbsp;audio,&nbsp;transcripts,&nbsp;traces,&nbsp;or&nbsp;logs</span></dd></dl>
+
+<dl><dt><a name="AgentSession-update_agent"><strong>update_agent</strong></a>(self, agent: Agent) -&gt; None</dt></dl>
+
+<dl><dt><a name="AgentSession-update_options"><strong>update_options</strong></a>(
+    self,
+    *,
+    min_endpointing_delay: NotGivenOr[float] = NOT_GIVEN,
+    max_endpointing_delay: NotGivenOr[float] = NOT_GIVEN,
+    turn_detection: NotGivenOr[TurnDetectionMode | None] = NOT_GIVEN
+) -&gt; None</dt><dd><span class="code">Update&nbsp;the&nbsp;options&nbsp;for&nbsp;the&nbsp;agent&nbsp;session.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;min_endpointing_delay&nbsp;(NotGivenOr[float],&nbsp;optional):&nbsp;The&nbsp;minimum&nbsp;endpointing&nbsp;delay.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;max_endpointing_delay&nbsp;(NotGivenOr[float],&nbsp;optional):&nbsp;The&nbsp;maximum&nbsp;endpointing&nbsp;delay.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;turn_detection&nbsp;(NotGivenOr[TurnDetectionMode&nbsp;|&nbsp;None],&nbsp;optional):&nbsp;Strategy&nbsp;for&nbsp;deciding<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;when&nbsp;the&nbsp;user&nbsp;has&nbsp;finished&nbsp;speaking.&nbsp;``None``&nbsp;reverts&nbsp;to&nbsp;automatic&nbsp;selection.</span></dd></dl>
+
+<hr>
+Readonly properties defined here:<br>
+<dl><dt><strong>agent_state</strong></dt>
+</dl>
+<dl><dt><strong>conn_options</strong></dt>
+</dl>
+<dl><dt><strong>current_agent</strong></dt>
+</dl>
+<dl><dt><strong>current_speech</strong></dt>
+</dl>
+<dl><dt><strong>history</strong></dt>
+</dl>
+<dl><dt><strong>input</strong></dt>
+</dl>
+<dl><dt><strong>llm</strong></dt>
+</dl>
+<dl><dt><strong>mcp_servers</strong></dt>
+</dl>
+<dl><dt><strong>options</strong></dt>
+</dl>
+<dl><dt><strong>output</strong></dt>
+</dl>
+<dl><dt><strong>room_io</strong></dt>
+</dl>
+<dl><dt><strong>stt</strong></dt>
+</dl>
+<dl><dt><strong>tools</strong></dt>
+</dl>
+<dl><dt><strong>tts</strong></dt>
+</dl>
+<dl><dt><strong>turn_detection</strong></dt>
+</dl>
+<dl><dt><strong>user_state</strong></dt>
+</dl>
+<dl><dt><strong>vad</strong></dt>
+</dl>
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>userdata</strong></dt>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>__orig_bases__</strong> = (livekit.rtc.event_emitter.EventEmitter[typing.Li..._collected', 'speech_created', 'error', 'close']], typing.Generic[~Userdata_T])</dl>
+
+<dl><dt><strong>__parameters__</strong> = (~Userdata_T,)</dl>
+
+<hr>
+Methods inherited from <a href="livekit.rtc.event_emitter.html#EventEmitter">livekit.rtc.event_emitter.EventEmitter</a>:<br>
+<dl><dt><a name="AgentSession-off"><strong>off</strong></a>(self, event: T_contra, callback: Callable) -&gt; None</dt><dd><span class="code">Unregister&nbsp;a&nbsp;callback&nbsp;from&nbsp;an&nbsp;event.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;event&nbsp;(T):&nbsp;The&nbsp;event&nbsp;to&nbsp;stop&nbsp;listening&nbsp;to.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;callback&nbsp;(Callable):&nbsp;The&nbsp;callback&nbsp;to&nbsp;remove.<br>
+&nbsp;<br>
+Example:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Removing&nbsp;a&nbsp;callback:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;```python<br>
+&nbsp;&nbsp;&nbsp;&nbsp;emitter&nbsp;=&nbsp;EventEmitter[str]()<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;greet(name):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print(f"Hello,&nbsp;{name}!")<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;emitter.<a href="#AgentSession-on">on</a>('greet',&nbsp;greet)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;emitter.<a href="#AgentSession-off">off</a>('greet',&nbsp;greet)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;emitter.<a href="#AgentSession-emit">emit</a>('greet',&nbsp;'Dave')&nbsp;&nbsp;#&nbsp;No&nbsp;output,&nbsp;callback&nbsp;was&nbsp;removed<br>
+&nbsp;&nbsp;&nbsp;&nbsp;```</span></dd></dl>
+
+<dl><dt><a name="AgentSession-on"><strong>on</strong></a>(self, event: T_contra, callback: Optional[Callable] = None) -&gt; Callable</dt><dd><span class="code">Register&nbsp;a&nbsp;callback&nbsp;to&nbsp;be&nbsp;called&nbsp;whenever&nbsp;the&nbsp;event&nbsp;is&nbsp;emitted.<br>
+&nbsp;<br>
+If&nbsp;a&nbsp;callback&nbsp;is&nbsp;provided,&nbsp;it&nbsp;registers&nbsp;the&nbsp;callback&nbsp;directly.<br>
+If&nbsp;no&nbsp;callback&nbsp;is&nbsp;provided,&nbsp;it&nbsp;returns&nbsp;a&nbsp;decorator&nbsp;for&nbsp;use&nbsp;with&nbsp;function&nbsp;definitions.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;event&nbsp;(T):&nbsp;The&nbsp;event&nbsp;to&nbsp;listen&nbsp;for.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;callback&nbsp;(Callable,&nbsp;optional):&nbsp;The&nbsp;callback&nbsp;to&nbsp;register.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Callable:&nbsp;The&nbsp;registered&nbsp;callback&nbsp;or&nbsp;a&nbsp;decorator&nbsp;if&nbsp;callback&nbsp;is&nbsp;None.<br>
+&nbsp;<br>
+Example:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Using&nbsp;on&nbsp;with&nbsp;a&nbsp;direct&nbsp;callback:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;```python<br>
+&nbsp;&nbsp;&nbsp;&nbsp;emitter&nbsp;=&nbsp;EventEmitter[str]()<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;greet(name):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print(f"Hello,&nbsp;{name}!")<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;emitter.<a href="#AgentSession-on">on</a>('greet',&nbsp;greet)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;emitter.<a href="#AgentSession-emit">emit</a>('greet',&nbsp;'Charlie')&nbsp;&nbsp;#&nbsp;Output:&nbsp;Hello,&nbsp;Charlie!<br>
+&nbsp;&nbsp;&nbsp;&nbsp;```<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Using&nbsp;on&nbsp;as&nbsp;a&nbsp;decorator:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;```python<br>
+&nbsp;&nbsp;&nbsp;&nbsp;emitter&nbsp;=&nbsp;EventEmitter[str]()<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;@emitter.<a href="#AgentSession-on">on</a>('greet')<br>
+&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;greet(name):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print(f"Hello,&nbsp;{name}!")<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;emitter.<a href="#AgentSession-emit">emit</a>('greet',&nbsp;'Charlie')&nbsp;&nbsp;#&nbsp;Output:&nbsp;Hello,&nbsp;Charlie!<br>
+&nbsp;&nbsp;&nbsp;&nbsp;```</span></dd></dl>
+
+<dl><dt><a name="AgentSession-once"><strong>once</strong></a>(self, event: T_contra, callback: Optional[Callable] = None) -&gt; Callable</dt><dd><span class="code">Register&nbsp;a&nbsp;callback&nbsp;to&nbsp;be&nbsp;called&nbsp;only&nbsp;once&nbsp;when&nbsp;the&nbsp;event&nbsp;is&nbsp;emitted.<br>
+&nbsp;<br>
+If&nbsp;a&nbsp;callback&nbsp;is&nbsp;provided,&nbsp;it&nbsp;registers&nbsp;the&nbsp;callback&nbsp;directly.<br>
+If&nbsp;no&nbsp;callback&nbsp;is&nbsp;provided,&nbsp;it&nbsp;returns&nbsp;a&nbsp;decorator&nbsp;for&nbsp;use&nbsp;with&nbsp;function&nbsp;definitions.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;event&nbsp;(T):&nbsp;The&nbsp;event&nbsp;to&nbsp;listen&nbsp;for.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;callback&nbsp;(Callable,&nbsp;optional):&nbsp;The&nbsp;callback&nbsp;to&nbsp;register.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Callable:&nbsp;The&nbsp;registered&nbsp;callback&nbsp;or&nbsp;a&nbsp;decorator&nbsp;if&nbsp;callback&nbsp;is&nbsp;None.<br>
+&nbsp;<br>
+Example:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Using&nbsp;once&nbsp;with&nbsp;a&nbsp;direct&nbsp;callback:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;```python<br>
+&nbsp;&nbsp;&nbsp;&nbsp;emitter&nbsp;=&nbsp;EventEmitter[str]()<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;greet_once(name):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print(f"Hello&nbsp;once,&nbsp;{name}!")<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;emitter.<a href="#AgentSession-once">once</a>('greet',&nbsp;greet_once)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;emitter.<a href="#AgentSession-emit">emit</a>('greet',&nbsp;'Bob')&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;Output:&nbsp;Hello&nbsp;once,&nbsp;Bob!<br>
+&nbsp;&nbsp;&nbsp;&nbsp;emitter.<a href="#AgentSession-emit">emit</a>('greet',&nbsp;'Bob')&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;No&nbsp;output,&nbsp;callback&nbsp;was&nbsp;removed&nbsp;after&nbsp;first&nbsp;call<br>
+&nbsp;&nbsp;&nbsp;&nbsp;```<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Using&nbsp;once&nbsp;as&nbsp;a&nbsp;decorator:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;```python<br>
+&nbsp;&nbsp;&nbsp;&nbsp;emitter&nbsp;=&nbsp;EventEmitter[str]()<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;@emitter.<a href="#AgentSession-once">once</a>('greet')<br>
+&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;greet_once(name):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print(f"Hello&nbsp;once,&nbsp;{name}!")<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;emitter.<a href="#AgentSession-emit">emit</a>('greet',&nbsp;'Bob')&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;Output:&nbsp;Hello&nbsp;once,&nbsp;Bob!<br>
+&nbsp;&nbsp;&nbsp;&nbsp;emitter.<a href="#AgentSession-emit">emit</a>('greet',&nbsp;'Bob')&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;No&nbsp;output<br>
+&nbsp;&nbsp;&nbsp;&nbsp;```</span></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="livekit.rtc.event_emitter.html#EventEmitter">livekit.rtc.event_emitter.EventEmitter</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object</span></dd>
+</dl>
+<hr>
+Class methods inherited from <a href="typing.html#Generic">typing.Generic</a>:<br>
+<dl><dt><a name="AgentSession-__class_getitem__"><strong>__class_getitem__</strong></a>(...)</dt><dd><span class="code">Parameterizes&nbsp;a&nbsp;generic&nbsp;class.<br>
+&nbsp;<br>
+At&nbsp;least,&nbsp;parameterizing&nbsp;a&nbsp;generic&nbsp;class&nbsp;is&nbsp;the&nbsp;*main*&nbsp;thing&nbsp;this<br>
+method&nbsp;does.&nbsp;For&nbsp;example,&nbsp;for&nbsp;some&nbsp;generic&nbsp;class&nbsp;`Foo`,&nbsp;this&nbsp;is&nbsp;called<br>
+when&nbsp;we&nbsp;do&nbsp;`Foo[int]`&nbsp;-&nbsp;there,&nbsp;with&nbsp;`cls=Foo`&nbsp;and&nbsp;`params=int`.<br>
+&nbsp;<br>
+However,&nbsp;note&nbsp;that&nbsp;this&nbsp;method&nbsp;is&nbsp;also&nbsp;called&nbsp;when&nbsp;defining&nbsp;generic<br>
+classes&nbsp;in&nbsp;the&nbsp;first&nbsp;place&nbsp;with&nbsp;`class&nbsp;Foo[T]:&nbsp;...`.</span></dd></dl>
+
+<dl><dt><a name="AgentSession-__init_subclass__"><strong>__init_subclass__</strong></a>(...)</dt><dd><span class="code">Function&nbsp;to&nbsp;initialize&nbsp;subclasses.</span></dd></dl>
+
+</td></tr></table>
+</body></html>

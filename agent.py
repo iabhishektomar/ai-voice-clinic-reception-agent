@@ -406,32 +406,30 @@ class VoiceAssistant(Agent):
             notes: Any additional notes or reasons for the visit.
         """
         logger.info("🔧 book_appointment tool invoked: %s on %s at %s", name, date, time)
-        try:
-            # Acknowledge verbally so the caller isn't left in silence
-            session = context.session
-            await session.say(
-                "Thank you! Booking your appointment now, just one moment.",
-                allow_interruptions=False,
-            )
 
-            airtable = AirtableApi(AIRTABLE_PAT)
-            table = airtable.table(AIRTABLE_BASE_ID, os.getenv("AIRTABLE_APPOINTMENTS_TABLE_NAME", "appointments"))
+        # Fire-and-forget: write to Airtable in the background
+        async def _write_airtable():
+            try:
+                loop = asyncio.get_event_loop()
+                airtable = AirtableApi(AIRTABLE_PAT)
+                table = airtable.table(AIRTABLE_BASE_ID, os.getenv("AIRTABLE_APPOINTMENTS_TABLE_NAME", "appointments"))
+                record = {
+                    "patient_name": name,
+                    "patient_phone": self._participant_identity,
+                    "appointment_date": date,
+                    "appointment_time": time,
+                    "status": "Booked",
+                    "notes": notes,
+                }
+                await loop.run_in_executor(None, table.create, record)
+                logger.info("✅ Appointment booked in Airtable for %s", name)
+            except Exception as exc:
+                logger.error("❌ Background Airtable write failed (book): %s", exc, exc_info=True)
 
-            record = {
-                "patient_name": name,
-                "patient_phone": self._participant_identity,  # Using identity as phone
-                "appointment_date": date,
-                "appointment_time": time,
-                "status": "Booked",
-                "notes": notes,
-            }
+        asyncio.create_task(_write_airtable())
 
-            table.create(record)
-            logger.info("✅ Appointment booked for %s", name)
-            return f"Success! I've booked your appointment for {date} at {time}. We look forward to seeing you."
-        except Exception as exc:
-            logger.error("❌ Failed to book appointment: %s", exc, exc_info=True)
-            return "I'm sorry, I encountered an error while booking your appointment. Please wait a moment or call us again."
+        # Confirm immediately — don't wait for Airtable
+        return f"Success! I've booked your appointment for {date} at {time}. We look forward to seeing you."
 
     @function_tool()
     async def reschedule_appointment(
@@ -450,35 +448,36 @@ class VoiceAssistant(Agent):
         """
         logger.info("🔧 reschedule_appointment tool invoked: from %s to %s at %s", current_date, new_date, new_time)
         try:
-            # Acknowledge verbally so the caller isn't left in silence
-            session = context.session
-            await session.say(
-                "Got it! Rescheduling your appointment now, one moment please.",
-                allow_interruptions=False,
-            )
-
+            loop = asyncio.get_event_loop()
             airtable = AirtableApi(AIRTABLE_PAT)
             table = airtable.table(AIRTABLE_BASE_ID, os.getenv("AIRTABLE_APPOINTMENTS_TABLE_NAME", "appointments"))
 
-            # Find the existing record for this phone number
+            # Lookup must be synchronous — we need the record ID
             formula = f"{{patient_phone}} = '{self._participant_identity}'"
-            records = table.all(formula=formula)
+            records = await loop.run_in_executor(None, lambda: table.all(formula=formula))
 
-            # Filter for the specific date and active status in Python
             match = [r for r in records if r['fields'].get('appointment_date') == current_date and r['fields'].get('status') != 'Cancelled']
 
             if not match:
                 return f"I couldn't find an active appointment for you on {current_date}."
 
-            # Update the first matching record
             record_id = match[0]["id"]
-            table.update(record_id, {
-                "appointment_date": new_date,
-                "appointment_time": new_time,
-                "status": "Rescheduled"
-            })
 
-            logger.info("✅ Appointment rescheduled to %s", new_date)
+            # Fire-and-forget: update Airtable in the background
+            async def _update_airtable():
+                try:
+                    update_data = {
+                        "appointment_date": new_date,
+                        "appointment_time": new_time,
+                        "status": "Rescheduled",
+                    }
+                    await loop.run_in_executor(None, lambda: table.update(record_id, update_data))
+                    logger.info("✅ Appointment rescheduled in Airtable to %s", new_date)
+                except Exception as exc:
+                    logger.error("❌ Background Airtable write failed (reschedule): %s", exc, exc_info=True)
+
+            asyncio.create_task(_update_airtable())
+
             return f"Your appointment has been successfully rescheduled to {new_date} at {new_time}."
         except Exception as exc:
             logger.error("❌ Failed to reschedule appointment: %s", exc, exc_info=True)
@@ -497,29 +496,31 @@ class VoiceAssistant(Agent):
         """
         logger.info("🔧 cancel_appointment tool invoked: %s", date)
         try:
-            # Acknowledge verbally so the caller isn't left in silence
-            session = context.session
-            await session.say(
-                "Alright, cancelling your appointment now. Just a moment.",
-                allow_interruptions=False,
-            )
-
+            loop = asyncio.get_event_loop()
             airtable = AirtableApi(AIRTABLE_PAT)
             table = airtable.table(AIRTABLE_BASE_ID, os.getenv("AIRTABLE_APPOINTMENTS_TABLE_NAME", "appointments"))
 
+            # Lookup must be synchronous — we need the record ID
             formula = f"{{patient_phone}} = '{self._participant_identity}'"
-            records = table.all(formula=formula)
+            records = await loop.run_in_executor(None, lambda: table.all(formula=formula))
 
-            # Filter for the specific date and active status in Python
             match = [r for r in records if r['fields'].get('appointment_date') == date and r['fields'].get('status') != 'Cancelled']
 
             if not match:
                 return f"I couldn't find an active appointment for you on {date}."
 
             record_id = match[0]["id"]
-            table.update(record_id, {"status": "Cancelled"})
 
-            logger.info("✅ Appointment cancelled for %s", date)
+            # Fire-and-forget: update Airtable in the background
+            async def _update_airtable():
+                try:
+                    await loop.run_in_executor(None, lambda: table.update(record_id, {"status": "Cancelled"}))
+                    logger.info("✅ Appointment cancelled in Airtable for %s", date)
+                except Exception as exc:
+                    logger.error("❌ Background Airtable write failed (cancel): %s", exc, exc_info=True)
+
+            asyncio.create_task(_update_airtable())
+
             return f"Your appointment on {date} has been cancelled as requested."
         except Exception as exc:
             logger.error("❌ Failed to cancel appointment: %s", exc, exc_info=True)
@@ -583,6 +584,7 @@ async def entrypoint(ctx: JobContext) -> None:
         llm=google.LLM(
             api_key=GOOGLE_API_KEY,
             model=GOOGLE_MODEL,
+            thinking_config={"thinking_budget": 0},
         ),
 
         # ── Text-to-Speech (Cartesia Sonic 3) ──────────────────────────────────
