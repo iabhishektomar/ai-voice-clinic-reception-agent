@@ -22,7 +22,7 @@ import os
 import re
 import time
 import traceback
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 
@@ -130,9 +130,26 @@ print(f"DEBUG: SIP_NUMBER='{SIP_NUMBER}'")
 MAX_CALL_DURATION_SECONDS = int(os.getenv("MAX_CALL_DURATION_SECONDS", "600"))
 
 # The agent's personality / instructions fed as the system prompt to the LLM.
-AGENT_SYSTEM_PROMPT = os.getenv("AGENT_SYSTEM_PROMPT") or """\
+def _build_system_prompt() -> str:
+    """Build the system prompt with the current date/time injected."""
+    override = os.getenv("AGENT_SYSTEM_PROMPT")
+    if override:
+        return override
+
+    # Use IST (UTC+5:30) since the clinic operates in India
+    IST = timezone(timedelta(hours=5, minutes=30))
+    now = datetime.now(IST)
+    today_str = now.strftime("%A, %B %d, %Y")  # e.g. "Saturday, April 04, 2026"
+    current_time_str = now.strftime("%I:%M %p")  # e.g. "04:30 PM"
+
+    return f"""\
 You are Sarah — a warm, friendly, and professional AI receptionist for "The Wellness Clinic". 
 Your goal is to help patients with information and manage their appointments.
+
+═══ CURRENT DATE & TIME ═══
+Today is {today_str}.
+The current time is {current_time_str} IST.
+Use this to answer questions about whether the clinic is open today, what day it is, etc.
 
 ═══ IDENTITY ═══
 • Name: Sarah
@@ -323,7 +340,7 @@ class VoiceAssistant(Agent):
 
     def __init__(self, room: rtc.Room, participant_identity: str) -> None:
         super().__init__(
-            instructions=AGENT_SYSTEM_PROMPT,
+            instructions=_build_system_prompt(),
         )
         self._room = room
         self._participant_identity = participant_identity
